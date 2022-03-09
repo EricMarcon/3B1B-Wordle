@@ -1,0 +1,177 @@
+---
+title: "Partitioning information in 3B1B Wordle video"
+author:
+  - name: "Eric Marcon"
+abstract: >
+  Abstract of the article.
+date: "`r format(Sys.time(), '%d %B %Y')`"
+url: https://EricMarcon.github.io/3B1B-Wordle/
+github-repo: EricMarcon/3B1B-Wordle
+lang: en-US
+bibliography: references.bib
+biblio-style: chicago
+pdftoc: false
+toc-depth: 3
+always_allow_html: yes
+output:
+  bookdown::html_document2:
+    toc: yes
+    toc_float: yes
+  rmdformats::downcute:
+    use_bookdown: yes
+    lightbox: yes
+  bookdown::word_document2: default
+  bookdown::gitbook:
+    config:
+      download: "pdf"
+      sharing:
+        github: yes
+  bookdown::pdf_book:
+    template: latex/template.tex
+    citation_package: natbib
+    latex_engine: xelatex
+    keep_tex: yes
+---
+
+```{r DoNotModify, include=FALSE}
+### Utilities. Do not modify.
+# Installation of packages if necessary
+InstallPackages <- function(Packages) {
+  InstallPackage <- function(Package) {
+    if (!Package %in% installed.packages()[, 1]) {
+      install.packages(Package, repos="https://cran.rstudio.com/")
+    }
+  }
+  invisible(sapply(Packages, InstallPackage))
+}
+
+# Basic packages
+InstallPackages(c("bookdown", "formatR", "kableExtra", "ragg"))
+
+# kableExtra must be loaded 
+if (knitr::opts_knit$get("rmarkdown.pandoc.to") == "docx") {
+  # Word output (https://stackoverflow.com/questions/35144130/in-knitr-how-can-i-test-for-if-the-output-will-be-pdf-or-word)
+  # Do not use autoformat (https://github.com/haozhu233/kableExtra/issues/308)
+  options(kableExtra.auto_format = FALSE)
+}
+library("kableExtra")
+
+# Chunk font size hook: allows size='small' or any valid Latex font size in chunk options
+def.chunk.hook  <- knitr::knit_hooks$get("chunk")
+knitr::knit_hooks$set(chunk = function(x, options) {
+  x <- def.chunk.hook(x, options)
+  ifelse(options$size != "normalsize", paste0("\n \\", options$size,"\n\n", x, "\n\n \\normalsize"), x)
+})
+```
+
+```{r Options, include=FALSE}
+### Customized options for this document
+# Add necessary packages here
+Packages <- c("tidyverse")
+# Install them
+InstallPackages(Packages)
+
+# knitr options
+knitr::opts_chunk$set(
+  cache = FALSE,   # Cache chunk results
+  echo = TRUE,     # Show/Hide R chunks
+  warning = FALSE, # Show/Hide warnings
+  message = FALSE, # Show/Hide messages
+  # Figure alignment and size
+  fig.align = 'center', out.width = '80%',
+  # Graphic devices (ragg_png is better than standard png)
+  dev = c("ragg_png", "pdf"),
+  # Code chunk format
+  tidy = TRUE, tidy.opts = list(blank=FALSE, width.cutoff=50),
+  size = "scriptsize", knitr.graphics.auto_pdf = TRUE
+  )
+options(width = 50)
+
+# ggplot style
+library("tidyverse")
+theme_set(theme_bw())
+theme_update(panel.background=element_rect(fill="transparent", colour=NA),
+             plot.background=element_rect(fill="transparent", colour=NA))
+knitr::opts_chunk$set(dev.args=list(bg="transparent"))
+
+# Random seed
+set.seed(973)
+```
+
+This is a comment on [3Blue1Brown's video](https://www.youtube.com/watch?v=v68zYyaEmEA) about solving Wordle using information theory.
+Please watch it before reading what follows for clarity.
+
+
+# Rationale
+
+The video is "an excuse to teach a lesson on information theory and entropy".
+As usual on 3B1B's channel, it is excellent but the way the total information of a set of words is split into the information of the color pattern and that of the remaining set was not obvious for me.
+That's why I explicit it here and show that it is a bit more complicated when word probabilities are not equal.
+
+# The simple case
+
+In the simple case, words are equally probable.
+> In the video at time [15:43](https://www.youtube.com/watch?v=v68zYyaEmEA&t=943s).
+
+The possible set contains 12972 words.
+Their average information, i.e. their entropy, is $\log_2(12972)$, i.e. 13.66 bits.
+This is explained in the "[Information theory basics](https://www.youtube.com/watch?v=v68zYyaEmEA&t=484s)" part of the video.
+
+Given the tentative word "SLATE", when the color pattern is known (here grey, orange, grey, grey, grey), the set of possible words is reduced to 578.
+Their information content is $\log_2(578)$, i.e. 9.17 bits.
+
+The information brought by the knowledge of the color pattern is $\log_2(12972/578)$.
+This is not obvious.
+When the word Slate is chosen, this color pattern is obtained if the hidden word is one of the 578 words that are compatible with it. 
+The probability to obtain it is simply 578/12972 since all words have the same probability to be the hidden one.
+The information brought by the color pattern is thus $\log_2(12972/578)$, i.e. 
+  
+The important result at this stage is that the total entropy (9.17 bits) can be partitioned between the entropy of the possible set (9.17 bits) and the information brought by the knowledge of the color pattern of the tentative word (4.49 bits).
+The latter is not an entropy as defined for the two sets of words: it is not the average information of 12972/578 equally probable sets of words.
+Actually, it is a relative entropy to be discovered later.
+
+That said, the proof of the validity of the partitioning is straightforward:
+$$ 578 * 12972/578 = 12972$$
+so
+$$\log_2(578) + \log_2(12972/578) = \log_2(12972).$$
+
+# Unequal weights
+
+This proof does not hold when words have unequal weights.
+Actually, the partitioning is only approximately true.
+At [24:03](https://www.youtube.com/watch?v=v68zYyaEmEA&t=1443s), the 12.54 bits of the whole set of words (with unequal probabilities) is not the sum of the remaining entropy (8.02 bits) and that of the color pattern (4.42 bits). 
+0.10 bits are missing.
+
+The partitioning of entropy has been derived by @Rao1985.
+It is widely used in the measurement of biodiversity [e.g. @Marcon2012a].
+
+The whole set of words must be split into two subsets when the color pattern is known: the possible words and the impossible ones.
+The total entropy [called $\gamma$ entropy after @Whittaker1960] is the sum of the average entropy of the two subsets (called $\alpha$ entropy) and their $\beta$ entropy, i.e. the relative entropy that describes how different they are from the whole set.
+
+Note $p_w$ the probability of the word $w$, $w_+=\sum_+{p_w}$ the sum of the probabilities of the words of the possible set and $w_-=\sum_-{p_w}$ that of the impossible set.
+
+$\alpha$ entropy is 
+$$w_+ \sum_+{p_wlog_2(1/p_w)} + w_- \sum_-{p_wlog_2(1/p_w)}.$$
+
+$\beta$ entropy is
+$$w_+ log_2(1/w_+) + w_- log_2(1/w_-).$$
+Their sum is $\gamma$ entropy:
+$$\sum{p_wlog_2(1/p_w)}$$
+
+The relation $\alpha$ entropy + $\beta$ entropy equals $\gamma$ entropy can be arranged considering that $w_+ = 1- w_-$ to obtain:
+$$\sum{p_w log_2(1/p_w)}
+   = \sum_+{p_wlog_2(1/p_w)} + log_2(1/w_+)
+   + w_-[{\sum_+{p_wlog_2(1/p_w)} - \sum_-{p_wlog_2(1/p_w)}} + log_2{w_+/w_-}].$$
+
+The first term of the relation is the total ($\gamma$) entropy, 12.54 bits in the example.
+The next ones are the entropy of the possible group (8.02 bits) and the information brought by the color pattern (4.42 bits).
+The last term contain the 0.10 bit approximation:
+$$w_-[{\sum_+{p_wlog_2(1/p_w)} - \sum_-{p_wlog_2(1/p_w)}} + log_2{w_+/w_-}]$$
+The first two terms of the sum are the difference between the entropy of the possible and the impossible group.
+If the probability distributions are similar (the rarity of words is not related to the group they belong to), then the difference between entropies is roughly the difference between the logarithms of the sizes of the groups, i.e. the opposite of the last term of the sum.
+The small difference is multiplied by $w_-$, making it yet smaller.
+
+In conclusion, the entropy partitioning proposed in the video is not exact when word weights vary but the error is small as long as the distribution of word probabilities in the possible group are similar to that of the words that do not match the color pattern.
+
+
+`r if (!knitr:::is_latex_output()) '# References {-}'`

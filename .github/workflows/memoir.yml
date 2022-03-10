@@ -29,6 +29,9 @@ jobs:
           RMD_PATH=($(ls | grep "[.]Rmd$"))
           Rscript -e 'for (file in commandArgs(TRUE)) rmarkdown::render(file, "all")' ${RMD_PATH[*]}
           Rscript -e 'memoiR::build_githubpages()'
+      - name: GH Pages Theme
+        run: |
+          echo 'theme: jekyll-theme-slate' > docs/_config.yml
       - name: Upload artifact
         uses: actions/upload-artifact@v1
         with:

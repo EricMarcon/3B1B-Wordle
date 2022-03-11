@@ -228,8 +228,8 @@ The discrepancy is thus `r format(w_minus * (ent(p_minus/w_minus) - ent(p_plus/w
 
 ## Approximation
 
-The derivation of \ref(eq:partition) is detailed here, step by step.
-Each line of the code contains the total entropy, starting from $\alpha$ plus $\beta$ entropy as defined before.
+The derivation of eq.\@ref(eq:partition) is detailed here, step by step.
+Each line of the code contains the total entropy, starting from $\alpha$ plus $\beta$ entropy as defined above.
 
 
 ```{r, tidy=FALSE}

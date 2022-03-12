@@ -125,6 +125,8 @@ This proof does not hold when words have unequal weights.
 Actually, the partitioning is not exact.
 At [24:03](https://www.youtube.com/watch?v=v68zYyaEmEA&t=1443s), the 12.54 bits of the whole set of words (with unequal probabilities) is not the sum of the entropy of the possible set (8.02 bits) and that brought by the color pattern (4.42 bits): 0.10 bits are missing.
 
+Qualitatively, the partitioning can't be exact because none of the two terms of the sum contains any information about the distribution of the set of impossible words while the total entropy does.
+
 The partitioning of entropy has been derived by @Rao1985.
 It is widely used in the measurement of biodiversity [e.g. @Marcon2012a].
 
@@ -168,6 +170,8 @@ In the general case, the small difference is multiplied by $w_-$, making it yet 
 In conclusion, the entropy partitioning proposed in the video is not exact when word weights vary but the error is small as long as the distribution of word probabilities in the possible group are similar to that of the words that do not match the color pattern.
 
 # Simulation
+
+This is a toy example made with R.
 
 ## Data
 

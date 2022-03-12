@@ -6,7 +6,7 @@
     <meta name="generator" content="pandoc" />
 
     
-        <meta name="date" content="2022-03-11" />
+        <meta name="date" content="2022-03-12" />
     
     <title>Partitioning information in 3B1B Wordle video</title>
 
@@ -143,7 +143,7 @@
            <span class="glyphicon glyphicon-user"></span> Eric Marcon
                <br>
       </p>
-         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 11 March 2022</p>
+         <p class="date"><span class="glyphicon glyphicon-calendar"></span> 12 March 2022</p>
            
 
    
@@ -182,6 +182,7 @@ so
 <p>This proof does not hold when words have unequal weights.
 Actually, the partitioning is not exact.
 At <a href="https://www.youtube.com/watch?v=v68zYyaEmEA&amp;t=1443s">24:03</a>, the 12.54 bits of the whole set of words (with unequal probabilities) is not the sum of the entropy of the possible set (8.02 bits) and that brought by the color pattern (4.42 bits): 0.10 bits are missing.</p>
+<p>Qualitatively, the partitioning can’t be exact because none of the two terms of the sum contains any information about the distribution of the set of impossible words while the total entropy does.</p>
 <p>The partitioning of entropy has been derived by <span class="citation">Rao and Nayak (1985)</span>.
 It is widely used in the measurement of biodiversity <span class="citation">(e.g. Marcon et al. 2012)</span>.</p>
 <p>The whole set of words must be split into two subsets when the color pattern is known: the possible words and the impossible ones.
@@ -217,6 +218,7 @@ In the general case, the small difference is multiplied by <span class="math inl
 </div>
 <div id="simulation" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Simulation</h1>
+<p>This is a toy example made with R.</p>
 <div id="data" class="section level2" number="4.1">
 <h2><span class="header-section-number">4.1</span> Data</h2>
 <p>The function <code>ent()</code> returns the entropy of a distribution of probabilities.</p>
